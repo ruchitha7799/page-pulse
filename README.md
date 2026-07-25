@@ -12,7 +12,6 @@ The application accepts a URL, fetches the webpage, analyzes its HTML, and prese
 
 [Open Page Pulse](https://page-pulse-frontend-wb3y.onrender.com/)
 
-> Replace `YOUR_FRONTEND_RENDER_URL` with the actual URL of the deployed frontend.
 
 ### Backend API
 
