@@ -1,6 +1,5 @@
 console.log("Page Pulse JavaScript loaded");
-const API_URL = "http://127.0.0.1:8000/api/v1/audit";
-
+const API_URL = "https://page-pulse-wbkb.onrender.com/api/v1/audit";
 const auditForm = document.getElementById("audit-form");
 const urlInput = document.getElementById("url-input");
 const auditButton = document.getElementById("audit-button");
