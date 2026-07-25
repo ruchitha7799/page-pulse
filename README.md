@@ -1,82 +1,108 @@
 # Page Pulse 🚀
 
-A web-based webpage auditing tool that analyzes any public URL and provides insights about performance, content structure, SEO, and accessibility.
+Page Pulse is a web-based webpage auditing tool that analyzes a publicly accessible URL and returns a structured report containing useful information about the page's performance, content structure, SEO, and accessibility-related signals.
 
-Page Pulse fetches a webpage, analyzes its HTML content, and generates a structured report containing important page metrics.
+The application accepts a URL, fetches the webpage, analyzes its HTML, and presents the results through a simple web interface.
+
+---
 
 ## 🌐 Live Demo
 
-Frontend:
-https://page-pulse-frontend-wb3y.onrender.com
+### Frontend
 
-Backend API:
-https://page-pulse-wbkb.onrender.com
+[Open Page Pulse](https://page-pulse-frontend-wb3y.onrender.com/)
+
+> Replace `YOUR_FRONTEND_RENDER_URL` with the actual URL of the deployed frontend.
+
+### Backend API
+
+[Open Page Pulse API](https://page-pulse-wbkb.onrender.com/)
+
+### API Documentation
+
+[Open Swagger API Documentation](https://page-pulse-wbkb.onrender.com/docs)
+
+### GitHub Repository
+
+[View Source Code](https://github.com/ruchitha7799/page-pulse)
 
 ---
 
 # ✨ Features
 
-## Web Auditing
-
-Page Pulse analyzes:
+Page Pulse provides the following webpage audit information:
 
 - HTTP response status
-- Response time
+- Approximate response time
 - Page title
 - Meta description
 - H1 heading count
-- Images missing alternative text
+- Number of images missing alt text
 - Approximate word count
 
+The application also provides:
 
-## Error Handling
-
-The application handles:
-
-- Invalid URLs
-- Connection failures
-- Timeout errors
-- Non-HTML responses
-- Server-side failures
-
-
-## User Interface
-
-The frontend provides:
-
-- Simple URL input
-- Loading state during analysis
-- Clean audit report display
-- Error messages for failed requests
-- Responsive design
-
+- URL validation
+- Timeout handling
+- Connection error handling
+- Non-HTML response handling
+- Structured API error responses
+- Loading state during audits
+- Clean frontend result presentation
+- User-friendly error messages
+- Responsive user interface
 
 ---
 
 # 🏗️ Architecture
 
-```
-User
- |
- |
-Frontend (HTML/CSS/JavaScript)
- |
- |
-FastAPI REST API
- |
- |
-Web Fetching Service
- |
- |
-HTML Parser
- |
- |
-Audit Report JSON
+Page Pulse follows a simple client-server architecture.
+
+```text
+                    User
+                      |
+                      v
+              Frontend Application
+              HTML / CSS / JavaScript
+                      |
+                      | HTTP POST
+                      v
+               FastAPI REST API
+                      |
+                      v
+              URL Validation
+                      |
+                      v
+             Webpage Fetcher
+                      |
+                      v
+               HTML Parser
+                      |
+                      v
+             Structured Audit
+                  Report
+                      |
+                      v
+             JSON API Response
+                      |
+                      v
+              Frontend Results
 ```
 
-## Project Structure
+The application is divided into separate responsibilities:
 
-```
+- **Frontend** handles user interaction and displays audit results.
+- **API routes** handle HTTP requests and responses.
+- **Fetcher service** handles webpage network requests.
+- **Parser service** extracts information from HTML.
+- **Schemas** define structured API request and response models.
+- **Tests** verify parsing behaviour, successful audits, and error handling.
+
+---
+
+# 📁 Project Structure
+
+```text
 Page-Pulse/
 
 ├── backend/
@@ -84,15 +110,19 @@ Page-Pulse/
 │   ├── app/
 │   │
 │   │   ├── routes/
+│   │   │   ├── __init__.py
+│   │   │   └── audit.py
+│   │   │
+│   │   ├── schemas/
+│   │   │   ├── __init__.py
 │   │   │   └── audit.py
 │   │   │
 │   │   ├── services/
+│   │   │   ├── __init__.py
 │   │   │   ├── fetcher.py
 │   │   │   └── parser.py
 │   │   │
-│   │   ├── schemas/
-│   │   │   └── audit.py
-│   │   │
+│   │   ├── __init__.py
 │   │   └── main.py
 │   │
 │   ├── tests/
@@ -103,27 +133,35 @@ Page-Pulse/
 │   └── requirements.txt
 │
 ├── frontend/
-│
 │   ├── index.html
-│   ├── style.css
-│   └── script.js
+│   ├── script.js
+│   └── style.css
 │
-└── README.md
+├── .gitignore
+├── ARCHITECTURE.md
+├── README.md
+└── REQUIREMENTS.md
 ```
 
 ---
 
 # 🔌 API Documentation
 
-## Audit URL
+## Audit a Webpage
 
 ### Endpoint
 
-```
+```text
 POST /api/v1/audit
 ```
 
-### Request
+### Full API URL
+
+```text
+https://page-pulse-wbkb.onrender.com/api/v1/audit
+```
+
+### Request Body
 
 ```json
 {
@@ -131,7 +169,11 @@ POST /api/v1/audit
 }
 ```
 
-### Successful Response
+---
+
+## Successful Response
+
+Example:
 
 ```json
 {
@@ -151,9 +193,51 @@ POST /api/v1/audit
 
 ---
 
-# ❌ Error Responses
+## Response Fields
 
-## Invalid URL
+| Field | Type | Description |
+|---|---|---|
+| `url` | string | The URL that was audited |
+| `http_status` | integer | HTTP response status returned by the target webpage |
+| `response_time_ms` | integer | Approximate time taken to fetch the webpage in milliseconds |
+| `page_title` | string or null | The content of the HTML `<title>` element |
+| `meta_description` | string or null | The content of the meta description, if available |
+| `h1_count` | integer | Number of H1 headings found on the page |
+| `images_missing_alt` | integer | Number of images that do not contain meaningful alt text |
+| `word_count` | integer | Approximate number of words extracted from the webpage |
+```
+
+---
+
+# ❌ Error Handling
+
+Page Pulse is designed to fail gracefully instead of crashing when an audit cannot be completed.
+
+The application handles the following cases:
+
+| Scenario | Behaviour |
+|---|---|
+| Invalid URL | Returns an `INVALID_URL` error |
+| Connection failure | Returns a `CONNECTION_ERROR` error |
+| Request timeout | Returns a `TIMEOUT` error |
+| Non-HTML response | Returns a `NON_HTML_RESPONSE` error |
+| Unexpected server failure | Returns a structured error response |
+
+The frontend receives the API error and displays a user-friendly message instead of exposing internal server details.
+
+---
+
+## Invalid URL Example
+
+Request:
+
+```json
+{
+  "url": "hello"
+}
+```
+
+Response:
 
 ```json
 {
@@ -165,7 +249,13 @@ POST /api/v1/audit
 }
 ```
 
-## Connection Failure
+---
+
+## Connection Error Example
+
+If the target website cannot be reached, Page Pulse returns a structured connection error rather than allowing the application to crash.
+
+Example:
 
 ```json
 {
@@ -179,31 +269,89 @@ POST /api/v1/audit
 
 ---
 
+# 🧪 Testing
+
+Page Pulse uses `pytest` for automated testing.
+
+Run all tests from the `backend` directory:
+
+```bash
+python -m pytest -v
+```
+
+The current test suite verifies:
+
+### HTML Parsing
+
+- Successful parsing of page information
+- Handling missing metadata
+- Detection of images missing alt text
+
+### API Audit
+
+- Successful webpage audit
+- Correct API response structure
+
+### Error Handling
+
+- Invalid URL handling
+- Timeout errors
+- Connection errors
+- Non-HTML response handling
+
+The final local test run passed all 8 tests:
+
+```text
+8 passed
+```
+
+The test suite is designed so that parsing logic can be tested without relying on real external websites.
+
+---
+
 # ⚙️ Local Setup
 
-## Backend Setup
+## Prerequisites
 
-Clone the repository:
+Make sure you have:
+
+- Python 3.10 or later
+- Git
+- A modern web browser
+
+---
+
+## 1. Clone the Repository
 
 ```bash
 git clone https://github.com/ruchitha7799/page-pulse.git
 ```
 
-Navigate to backend:
+Navigate into the project:
 
 ```bash
-cd Page-Pulse/backend
+cd page-pulse
 ```
 
-Create virtual environment:
+---
+
+# 🖥️ Backend Setup
+
+Navigate to the backend:
+
+```bash
+cd backend
+```
+
+Create a virtual environment:
+
+### Windows
 
 ```bash
 python -m venv venv
 ```
 
-Activate environment:
-
-Windows:
+Activate it:
 
 ```bash
 venv\Scripts\activate
@@ -215,140 +363,285 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-Run backend:
+Start the FastAPI server:
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-Backend runs at:
+The backend will be available at:
 
-```
+```text
 http://127.0.0.1:8000
+```
+
+Swagger API documentation will be available at:
+
+```text
+http://127.0.0.1:8000/docs
 ```
 
 ---
 
-# Frontend Setup
+# 🌐 Frontend Setup
 
-Navigate to frontend:
+Navigate to the frontend directory:
 
 ```bash
 cd frontend
 ```
 
-Run:
+Start a simple local web server:
 
 ```bash
 python -m http.server 5500
 ```
 
-Open:
+Open the following URL in your browser:
 
-```
+```text
 http://127.0.0.1:5500
 ```
 
----
-
-# 🧪 Testing
-
-Run backend tests:
-
-```bash
-python -m pytest -v
-```
-
-Current test coverage includes:
-
-- Successful HTML parsing
-- Missing metadata handling
-- Missing image alt attributes
-- Successful audit request
-- Invalid URLs
-- Timeout handling
-- Connection errors
-- Non-HTML responses
-
+The frontend communicates with the configured FastAPI backend.
 
 ---
 
 # 💡 Design Decisions
 
-## 1. Separation of Fetching and Parsing Logic
+## 1. Separating Webpage Fetching from HTML Parsing
 
 ### Decision
 
-The webpage fetching logic and HTML parsing logic are implemented as separate services.
+I separated the network fetching logic and HTML parsing logic into independent services.
 
-### Reason
+### Why
 
-This improves maintainability and makes testing easier.
+The main reason for this decision was testability.
 
-The parser can be tested independently without making real network requests.
+Network requests are slow, unreliable, and dependent on external websites. I did not want parser tests to depend on real network requests.
+
+By separating the parser, I can provide controlled HTML directly to the parser and test its behaviour deterministically.
+
+This separation also makes the application easier to maintain and allows the fetching mechanism to be changed independently in the future.
 
 ---
 
-## 2. Structured Error Responses
+## 2. Using Structured Error Responses
 
 ### Decision
 
-All failures return consistent JSON error formats.
+I use structured error responses containing both a machine-readable error code and a human-readable message.
 
-### Reason
+For example:
 
-A predictable API response makes frontend handling easier and improves developer experience.
+```json
+{
+  "success": false,
+  "error": {
+    "code": "INVALID_URL",
+    "message": "Please provide a valid HTTP or HTTPS URL."
+  }
+}
+```
+
+### Why
+
+The frontend should not need to understand backend implementation details.
+
+A stable error code allows the frontend to handle different failure types consistently, while the message provides useful information to the user.
+
+This also makes the API easier for another client or frontend to consume.
 
 ---
 
-## 3. Client-Server Separation
+## 3. Separating the Frontend and Backend
 
 ### Decision
 
-The frontend and backend are deployed independently.
+The frontend and backend are implemented and deployed as separate services.
 
-### Reason
+### Why
 
-This allows independent scaling, easier maintenance, and follows modern web application architecture patterns.
+This keeps responsibilities clear.
+
+The frontend focuses on:
+
+- User interaction
+- Input handling
+- Loading states
+- Displaying results
+- Displaying errors
+
+The backend focuses on:
+
+- URL validation
+- Fetching webpages
+- Parsing HTML
+- Error handling
+- Returning structured JSON
+
+Keeping these responsibilities separate makes the system easier to maintain and allows the frontend and backend to be updated independently.
+
+---
+
+# ⚠️ Current Limitations
+
+Page Pulse currently audits publicly accessible HTML webpages.
+
+It does not execute JavaScript-heavy pages in a real browser environment before parsing their content. As a result, information that is rendered only after client-side JavaScript execution may not be included in the audit.
+
+The word count is approximate and is based on extracted webpage text rather than a full browser-rendered DOM.
+
+The current implementation also does not provide a complete Lighthouse-style performance, SEO, or accessibility score.
+
+---
+
+# 🔐 Security Considerations
+
+The application accepts user-provided URLs and makes server-side HTTP requests to those destinations.
+
+For a production-scale version, I would strengthen the URL fetching layer with additional SSRF protections, including:
+
+- Blocking localhost addresses
+- Blocking private network ranges
+- Blocking loopback addresses
+- Blocking cloud metadata endpoints
+- Validating resolved IP addresses
+- Restricting allowed protocols to HTTP and HTTPS
+
+These protections would help prevent the server from being abused to access internal network resources.
 
 ---
 
 # 🚀 Deployment
 
-Frontend:
+The application is deployed using Render.
 
-Render Static Site
+### Frontend
 
-Backend:
+The frontend is deployed as a Render Static Site.
 
-Render Web Service
+### Backend
 
-The backend API is configured with CORS support to allow communication with the deployed frontend.
+The FastAPI backend is deployed as a Render Web Service.
+
+### Backend URL
+
+```text
+https://page-pulse-wbkb.onrender.com
+```
+
+### API Documentation
+
+```text
+https://page-pulse-wbkb.onrender.com/docs
+```
+
+The backend is configured to allow requests from the deployed frontend using CORS configuration.
+
+---
+
+# 🔮 What I Would Improve With Another Day
+
+If I had another day to continue developing Page Pulse, I would focus on the following improvements.
+
+## 1. Browser-Based Rendering
+
+I would add optional browser rendering using a tool such as Playwright.
+
+This would allow Page Pulse to analyze content generated dynamically by JavaScript, which is not always available in the initial HTML response.
+
+---
+
+## 2. Deeper Accessibility Analysis
+
+I would extend the audit beyond missing image alt text.
+
+Potential checks would include:
+
+- Missing form labels
+- Heading hierarchy
+- Missing language attributes
+- Landmark structure
+- Link accessibility
+- Additional semantic HTML checks
+
+This would make the accessibility analysis more useful.
+
+---
+
+## 3. Performance and Security Improvements
+
+I would add caching for repeated audits to reduce unnecessary network requests.
+
+I would also strengthen SSRF protections by validating resolved IP addresses and blocking private or internal network ranges before making outbound requests.
 
 ---
 
 # 🤖 AI Usage Disclosure
 
-AI tools were used during development for assistance with debugging, improving documentation structure, reviewing implementation approaches, and identifying possible edge cases.
+AI tools were used during development for assistance with debugging, documentation structure, reviewing implementation approaches, and identifying potential edge cases.
 
-All final implementation decisions, code integration, testing, and deployment configuration were reviewed and completed by me.
-
----
-
-# 🔮 Future Improvements
-
-If given additional development time, I would improve:
-
-- Lighthouse-style performance scoring
-- Accessibility score calculation
-- Screenshot generation
-- Historical audit tracking
-- Authentication and user dashboards
+I reviewed, tested, integrated, and made the final implementation and deployment decisions myself.
 
 ---
 
-# 📜 License
+# 🎥 Demo
+
+A Loom walkthrough will demonstrate:
+
+- The live Page Pulse website
+- A successful webpage audit
+- Invalid URL handling
+- Error handling
+- Project structure
+- Relevant code walkthrough
+- Automated tests
+- One improvement I would make with additional development time
+
+Loom Demo:
+
+```text
+COMING SOON
+```
+
+The Loom link will be added before final submission.
+
+---
+
+# 📌 Required Digital Heroes Credit
+
+The live frontend includes the required visible footer credit:
+
+**Built for Digital Heroes Training Task**
+
+The credit links to:
+
+[Digital Heroes](https://digitalheroesco.com)
+
+---
+
+# 📜 Internship Task
 
 This project was created as part of the Digital Heroes Software Development Internship task.
 
-Built for Digital Heroes Training Task.
+The implementation focuses on:
+
+- API correctness
+- Reliable error handling
+- Clean code structure
+- Testable parsing logic
+- Clear API design
+- Practical deployment
+- Engineering judgment
+
+---
+
+# 👩‍💻 Author
+
+**Ruchitha Puru**
+
+GitHub:
+
+https://github.com/ruchitha7799
