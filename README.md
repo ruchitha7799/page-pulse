@@ -599,15 +599,9 @@ A Loom walkthrough will demonstrate:
 - Automated tests
 - One improvement I would make with additional development time
 
-Loom Demo:
+## Loom Demo
 
-```text
-COMING SOON
-```
-
-The Loom link will be added before final submission.
-
----
+[Watch the Page Pulse Demo](https://www.loom.com/share/4531c8690aad4c67b2ced960b907eb07)
 
 # 📌 Required Digital Heroes Credit
 
